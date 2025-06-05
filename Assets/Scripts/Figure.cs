@@ -11,7 +11,8 @@ public enum TypeShape
     Triangle,
     Polygon,
     SpecialWeight,
-    SpecialIce
+    SpecialIce,
+    SpecialFriction
 };
 
 //TypeColor-нельзя задавать значение явно
@@ -52,7 +53,7 @@ public class Figure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce || typeShape == TypeShape.SpecialFriction)
         {
             return 0;
         }
@@ -64,7 +65,7 @@ public class Figure : MonoBehaviour
 
     public TypeAnimal GetTypeAnimal()
     {
-        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce || typeShape == TypeShape.SpecialFriction)
         {
             return 0;
         }
@@ -99,6 +100,9 @@ public class Figure : MonoBehaviour
             case TypeShape.SpecialIce:
                 filename += "SpecialIce";
                 break;
+            case TypeShape.SpecialFriction:
+                filename += "SpecialFriction";
+                break;
             default:
                 filename += "Square";
                 break;
@@ -122,6 +126,11 @@ public class Figure : MonoBehaviour
             if (typeShape == TypeShape.SpecialWeight)
             {
                 rigidbody2D.mass = 100.0f;
+            } else if (typeShape == TypeShape.SpecialFriction)
+            {
+                PhysicsMaterial2D material = new PhysicsMaterial2D();
+                material.friction = 100.0f;
+                rigidbody2D.sharedMaterial = material;
             }
         }
 
@@ -154,6 +163,11 @@ public class Figure : MonoBehaviour
         if (typeShape == TypeShape.SpecialIce)
         {
             spriteRenderer.color = Color.blue;
+        }
+        else
+        if (typeShape == TypeShape.SpecialFriction)
+        {
+            spriteRenderer.color = Color.green;
         }
     }
 
@@ -194,6 +208,10 @@ public class Figure : MonoBehaviour
         if (typeShape == TypeShape.SpecialIce)
         {
             filename = "TypeAnimals/special_ice";
+        }else
+        if (typeShape == TypeShape.SpecialFriction)
+        {
+            filename = "TypeAnimals/special_friction";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);

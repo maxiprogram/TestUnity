@@ -258,6 +258,10 @@ public class GameManager : MonoBehaviour
         if (rndTypeShape == TypeShape.SpecialIce)
         {
             key = (int)rndTypeShape + "_0_0";
+        } else
+        if (rndTypeShape == TypeShape.SpecialFriction)
+        {
+            key = (int)rndTypeShape + "_0_0";
         }
         if (hashtableControlMod3.ContainsKey(key))
         {
