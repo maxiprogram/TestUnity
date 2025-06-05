@@ -10,7 +10,8 @@ public enum TypeShape
     Circle,
     Triangle,
     Polygon,
-    SpecialWeight
+    SpecialWeight,
+    SpecialIce
 };
 
 //TypeColor-нельзя задавать значение явно
@@ -51,7 +52,7 @@ public class Figure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        if (typeShape == TypeShape.SpecialWeight)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
         {
             return 0;
         }
@@ -63,7 +64,7 @@ public class Figure : MonoBehaviour
 
     public TypeAnimal GetTypeAnimal()
     {
-        if (typeShape == TypeShape.SpecialWeight)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
         {
             return 0;
         }
@@ -94,6 +95,9 @@ public class Figure : MonoBehaviour
                 break;
             case TypeShape.SpecialWeight:
                 filename += "SpecialWeight";
+                break;
+            case TypeShape.SpecialIce:
+                filename += "SpecialIce";
                 break;
             default:
                 filename += "Square";
@@ -146,6 +150,11 @@ public class Figure : MonoBehaviour
         {
             spriteRenderer.color = Color.black;
         }
+        else
+        if (typeShape == TypeShape.SpecialIce)
+        {
+            spriteRenderer.color = Color.blue;
+        }
     }
 
     public void SetTypeAnimal(TypeAnimal typeAnimal)
@@ -181,6 +190,10 @@ public class Figure : MonoBehaviour
         if (typeShape == TypeShape.SpecialWeight)
         {
             filename = "TypeAnimals/special_weight";
+        }else
+        if (typeShape == TypeShape.SpecialIce)
+        {
+            filename = "TypeAnimals/special_ice";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);

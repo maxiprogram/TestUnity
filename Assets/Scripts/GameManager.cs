@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -35,6 +36,7 @@ public class GameManager : MonoBehaviour
     private StatusGame statusGame = StatusGame.Play;
 
     private Dictionary<string, int> hashtableControlMod3;
+    private int coutDelete = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -91,6 +93,13 @@ public class GameManager : MonoBehaviour
                         //Debug.Log("Yes find GameObject");
 
                         Figure foundFigure = foundObject.GetComponent<Figure>();
+                        if (foundFigure.GetTypeShape() == TypeShape.SpecialIce)
+                        {
+                            if (coutDelete < 9)
+                            {
+                                return;
+                            }
+                        }
 
                         //GameObject imageObject = new GameObject("NewImage");
                         GameObject imageObject = Instantiate(refPrefabUiFigure);
@@ -127,6 +136,7 @@ public class GameManager : MonoBehaviour
                         }
                         listFigures.Remove(foundObject);
                         Destroy(hit.collider.gameObject);
+                        coutDelete++;
 
                         currentAction++;
                         //Debug.Log("Start CheckingMatch()");
@@ -244,17 +254,21 @@ public class GameManager : MonoBehaviour
         if (rndTypeShape == TypeShape.SpecialWeight)
         {
             key = (int)rndTypeShape + "_0_0";
+        } else
+        if (rndTypeShape == TypeShape.SpecialIce)
+        {
+            key = (int)rndTypeShape + "_0_0";
         }
         if (hashtableControlMod3.ContainsKey(key))
-            {
-                //Debug.Log("Increment hashtableControlMod3");
-                hashtableControlMod3[key] = hashtableControlMod3[key] + 1;
-            }
-            else
-            {
-                //Debug.Log("Add hashtableControlMod3");
-                hashtableControlMod3.Add(key, 1);
-            }
+        {
+            //Debug.Log("Increment hashtableControlMod3");
+            hashtableControlMod3[key] = hashtableControlMod3[key] + 1;
+        }
+        else
+        {
+            //Debug.Log("Add hashtableControlMod3");
+            hashtableControlMod3.Add(key, 1);
+        }
     }
 
     public void CheckingMatch() //IEnumerator
@@ -352,6 +366,8 @@ public class GameManager : MonoBehaviour
             refDisplayWin.SetActive(false);
         }
 
+        coutDelete = 0;
+
         statusGame = StatusGame.Regenerate;
         StartCoroutine(CreateFigures(countFigures));
 
@@ -393,6 +409,7 @@ public class GameManager : MonoBehaviour
 
         currentAction = 0;
 
+        coutDelete = 0;
 
         statusGame = StatusGame.Init;
         StartCoroutine(CreateFigures(maxCountFigure));

@@ -43,7 +43,7 @@ public class UiFigure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        if (typeShape == TypeShape.SpecialWeight)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
         {
             return 0;
         }
@@ -54,7 +54,7 @@ public class UiFigure : MonoBehaviour
     }
 
     public TypeAnimal GetTypeAnimal()
-    {if (typeShape == TypeShape.SpecialWeight)
+    {if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce)
         {
             return 0;
         }
@@ -85,6 +85,9 @@ public class UiFigure : MonoBehaviour
                 break;
             case TypeShape.SpecialWeight:
                 filename += "SpecialWeight";
+                break;
+            case TypeShape.SpecialIce:
+                filename += "SpecialIce";
                 break;
             default:
                 filename += "Square";
@@ -126,6 +129,11 @@ public class UiFigure : MonoBehaviour
         {
             imageRenderer.color = Color.black;
         }
+        else
+        if (typeShape == TypeShape.SpecialIce)
+        {
+            imageRenderer.color = Color.blue;
+        }
     }
 
     public void SetTypeAnimal(TypeAnimal typeAnimal)
@@ -161,6 +169,11 @@ public class UiFigure : MonoBehaviour
         if (typeShape == TypeShape.SpecialWeight)
         {
             filename = "TypeAnimals/special_weight";
+        }
+        else
+        if (typeShape == TypeShape.SpecialIce)
+        {
+            filename = "TypeAnimals/special_ice";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);
