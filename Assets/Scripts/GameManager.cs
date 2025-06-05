@@ -262,7 +262,12 @@ public class GameManager : MonoBehaviour
         if (rndTypeShape == TypeShape.SpecialFriction)
         {
             key = (int)rndTypeShape + "_0_0";
+        } else
+        if (rndTypeShape == TypeShape.SpecialBomb)
+        {
+            key = (int)rndTypeShape + "_0_0";
         }
+
         if (hashtableControlMod3.ContainsKey(key))
         {
             //Debug.Log("Increment hashtableControlMod3");
@@ -296,7 +301,7 @@ public class GameManager : MonoBehaviour
             string keyCurrent = uiFigureCurrent.GetTypeShape() + "_" + uiFigureCurrent.GetTypeColor() + "_" + uiFigureCurrent.GetTypeAnimal();
             string keyPrevious = uiFigurePrevious.GetTypeShape() + "_" + uiFigurePrevious.GetTypeColor() + "_" + uiFigurePrevious.GetTypeAnimal();
             string keyPrevious2 = uiFigurePrevious2.GetTypeShape() + "_" + uiFigurePrevious2.GetTypeColor() + "_" + uiFigurePrevious2.GetTypeAnimal();
-            Debug.Log("cmp keys: "+keyCurrent+" "+keyPrevious+" "+keyPrevious2);
+            //Debug.Log("cmp keys: "+keyCurrent+" "+keyPrevious+" "+keyPrevious2);
             if (keyCurrent == keyPrevious && keyCurrent == keyPrevious2)
             {
                 isMatch = true;
@@ -314,10 +319,16 @@ public class GameManager : MonoBehaviour
 
     private IEnumerator AwaitUiFigureMove(UiFigure uiFigure, int index)
     {
-        while (uiFigure.GetStatusMove())
+        bool isSpecialBomb = false;
+        if (uiFigure.GetTypeShape() == TypeShape.SpecialBomb)
         {
-            yield return new WaitForSeconds(0.01f);
+            isSpecialBomb = true;
         }
+
+        while (uiFigure.GetStatusMove())
+            {
+                yield return new WaitForSeconds(0.01f);
+            }
         Destroy(actionArray[index]);
         actionArray[index] = null;
         Destroy(actionArray[index - 1]);
@@ -325,18 +336,26 @@ public class GameManager : MonoBehaviour
         Destroy(actionArray[index - 2]);
         actionArray[index - 2] = null;
 
+        if (index - 3 >= 0 && isSpecialBomb)
+        {
+            Destroy(actionArray[index - 3]);
+            actionArray[index - 3] = null;
+            currentAction--;
+        }
+
         if (listFigures.Count == 0 && actionArray[0] == null)
-        {
-            statusGame = StatusGame.Win;
-            refDisplayWin.SetActive(true);
-        }
-        else if (listFigures.Count == 0 && actionArray[0] != null)
-        {
-            statusGame = StatusGame.Lose;
-            refDisplayLose.SetActive(true);
-        }
+            {
+                statusGame = StatusGame.Win;
+                refDisplayWin.SetActive(true);
+            }
+            else if (listFigures.Count == 0 && actionArray[0] != null)
+            {
+                statusGame = StatusGame.Lose;
+                refDisplayLose.SetActive(true);
+            }
     }
 
+    //TODO Потеря из-за /3 или многократное увеличение(переделать Random)
     public void RegenerateFigures()
     {
         if (statusGame == StatusGame.Init || statusGame == StatusGame.Regenerate)
@@ -347,7 +366,8 @@ public class GameManager : MonoBehaviour
 
         int countFigures = listFigures.Count();
         //Debug.Log("RegenerateFigures() count_new:" + countFigures);
-        countFigures = countFigures / 3;
+        //countFigures = countFigures / 3;
+        countFigures = (int)Math.Ceiling(countFigures / 3.0f);
         if (countFigures == 0)
         {
             countFigures = 1;

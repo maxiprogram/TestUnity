@@ -12,7 +12,8 @@ public enum TypeShape
     Polygon,
     SpecialWeight,
     SpecialIce,
-    SpecialFriction
+    SpecialFriction,
+    SpecialBomb
 };
 
 //TypeColor-нельзя задавать значение явно
@@ -53,7 +54,8 @@ public class Figure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce || typeShape == TypeShape.SpecialFriction)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce
+        || typeShape == TypeShape.SpecialFriction || typeShape == TypeShape.SpecialBomb)
         {
             return 0;
         }
@@ -65,7 +67,8 @@ public class Figure : MonoBehaviour
 
     public TypeAnimal GetTypeAnimal()
     {
-        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce || typeShape == TypeShape.SpecialFriction)
+        if (typeShape == TypeShape.SpecialWeight || typeShape == TypeShape.SpecialIce
+        || typeShape == TypeShape.SpecialFriction || typeShape == TypeShape.SpecialBomb)
         {
             return 0;
         }
@@ -102,6 +105,9 @@ public class Figure : MonoBehaviour
                 break;
             case TypeShape.SpecialFriction:
                 filename += "SpecialFriction";
+                break;
+            case TypeShape.SpecialBomb:
+                filename += "SpecialBomb";
                 break;
             default:
                 filename += "Square";
@@ -169,6 +175,11 @@ public class Figure : MonoBehaviour
         {
             spriteRenderer.color = Color.green;
         }
+        else
+        if (typeShape == TypeShape.SpecialBomb)
+        {
+            spriteRenderer.color = Color.red;
+        }
     }
 
     public void SetTypeAnimal(TypeAnimal typeAnimal)
@@ -212,6 +223,11 @@ public class Figure : MonoBehaviour
         if (typeShape == TypeShape.SpecialFriction)
         {
             filename = "TypeAnimals/special_friction";
+        }
+        else
+        if (typeShape == TypeShape.SpecialBomb)
+        {
+            filename = "TypeAnimals/special_bomb";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);
