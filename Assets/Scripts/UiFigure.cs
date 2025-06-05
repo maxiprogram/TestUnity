@@ -30,6 +30,11 @@ public class UiFigure : MonoBehaviour
         statusMove = status;
     }
 
+    public bool GetStatusMove()
+    {
+        return statusMove;
+    }
+
     public TypeShape GetTypeShape()
     {
         return typeShape;

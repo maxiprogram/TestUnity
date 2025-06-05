@@ -52,106 +52,108 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (currentAction >= 7 || statusGame != StatusGame.Play)
+        if (currentAction >= 7)
+        {
+            statusGame = StatusGame.Lose;
+            refDisplayLose.SetActive(true);
+            return;
+        }
+
+        if (statusGame != StatusGame.Play)
         {
             return;
         }
 
         if (Input.GetMouseButtonDown(0) || (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began))
-        {
-            Debug.Log("Click Mouse: " + Input.mousePosition);
+            {
+                //Debug.Log("Click Mouse: " + Input.mousePosition);
 
-            UnityEngine.Vector3 inputVector;
-            if (Input.touchCount > 0)
-            {
-                inputVector = new UnityEngine.Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0);
-            }
-            else
-            {
-                inputVector = Input.mousePosition;
-            }
-
-            //Debug.Log("Pos: "+Input.mousePosition);
-            UnityEngine.Vector2 inputPosition = Camera.main.ScreenToWorldPoint(inputVector);
-            RaycastHit2D hit = Physics2D.Raycast(inputPosition, UnityEngine.Vector2.zero);
-            if (hit.collider != null)
-            {
-                Debug.Log("2D Click on " + hit.collider.gameObject.name);
-                Predicate<GameObject> myPredicate = obj => obj == hit.collider.gameObject;
-                GameObject foundObject = listFigures.Find(myPredicate);
-                if (foundObject != null)
+                UnityEngine.Vector3 inputVector;
+                if (Input.touchCount > 0)
                 {
-                    Debug.Log("Yes find GameObject");
+                    inputVector = new UnityEngine.Vector3(Input.GetTouch(0).position.x, Input.GetTouch(0).position.y, 0);
+                }
+                else
+                {
+                    inputVector = Input.mousePosition;
+                }
 
-                    Figure foundFigure = foundObject.GetComponent<Figure>();
-
-                    //GameObject imageObject = new GameObject("NewImage");
-                    GameObject imageObject = Instantiate(refPrefabUiFigure);
-                    UiFigure uiFigure = imageObject.GetComponent<UiFigure>();
-
-                    imageObject.transform.SetParent(FindObjectOfType<Canvas>().transform);
-
-                    uiFigure.SetTypeShape(foundFigure.GetTypeShape());
-                    uiFigure.SetTypeColor(foundFigure.GetTypeColor());
-                    uiFigure.SetTypeAnimal(foundFigure.GetTypeAnimal());
-
-                    RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
-                    rectTransform.anchoredPosition = inputVector;
-
-                    GameObject templateAction = GameObject.Find("TemplateAction" + (currentAction+1));
-                    RectTransform templateActionRectTransform = templateAction.GetComponent<RectTransform>();
-                    uiFigure.SetTargetPosition(new UnityEngine.Vector2(templateActionRectTransform.position.x, templateActionRectTransform.position.y));
-                    uiFigure.SetStatusMove(true);
-                    actionArray[currentAction] = imageObject;
-
-                    listFigures.Remove(foundObject);
-                    Destroy(hit.collider.gameObject);
-
-                    currentAction++;
-                    if (currentAction == 7)
+                //Debug.Log("Pos: "+Input.mousePosition);
+                UnityEngine.Vector2 inputPosition = Camera.main.ScreenToWorldPoint(inputVector);
+                RaycastHit2D hit = Physics2D.Raycast(inputPosition, UnityEngine.Vector2.zero);
+                if (hit.collider != null)
+                {
+                    //Debug.Log("2D Click on " + hit.collider.gameObject.name);
+                    Predicate<GameObject> myPredicate = obj => obj == hit.collider.gameObject;
+                    GameObject foundObject = listFigures.Find(myPredicate);
+                    if (foundObject != null)
                     {
-                        statusGame = StatusGame.Lose;
-                        refDisplayLose.SetActive(true);
-                    }
-                    else
-                    {
-                        CheckingMatch();
-                        if (listFigures.Count == 0)
+                        //Debug.Log("Yes find GameObject");
+
+                        Figure foundFigure = foundObject.GetComponent<Figure>();
+
+                        //GameObject imageObject = new GameObject("NewImage");
+                        GameObject imageObject = Instantiate(refPrefabUiFigure);
+                        UiFigure uiFigure = imageObject.GetComponent<UiFigure>();
+
+                        imageObject.transform.SetParent(FindObjectOfType<Canvas>().transform);
+
+                        uiFigure.SetTypeShape(foundFigure.GetTypeShape());
+                        uiFigure.SetTypeColor(foundFigure.GetTypeColor());
+                        uiFigure.SetTypeAnimal(foundFigure.GetTypeAnimal());
+
+                        RectTransform rectTransform = imageObject.GetComponent<RectTransform>();
+                        rectTransform.anchoredPosition = inputVector;
+
+                        GameObject templateAction = GameObject.Find("TemplateAction" + (currentAction + 1));
+                        RectTransform templateActionRectTransform = templateAction.GetComponent<RectTransform>();
+                        uiFigure.SetTargetPosition(new UnityEngine.Vector2(templateActionRectTransform.position.x, templateActionRectTransform.position.y));
+                        uiFigure.SetStatusMove(true);
+                        actionArray[currentAction] = imageObject;
+
+                        string key = (int)foundFigure.GetTypeShape() + "_" + (int)foundFigure.GetTypeColor() + "_" + (int)foundFigure.GetTypeAnimal();
+                        if (hashtableControlMod3.ContainsKey(key))
                         {
-                            if (actionArray[0] == null)
+                            int count = hashtableControlMod3[key];
+                            if (count == 1)
                             {
-                                statusGame = StatusGame.Win;
-                                refDisplayWin.SetActive(true);
+                                hashtableControlMod3.Remove(key);
                             }
                             else
                             {
-                                statusGame = StatusGame.Lose;
-                                refDisplayLose.SetActive(true);
+                                count--;
+                                hashtableControlMod3[key] = count;
                             }
                         }
+                        listFigures.Remove(foundObject);
+                        Destroy(hit.collider.gameObject);
+
+                        currentAction++;
+                        //Debug.Log("Start CheckingMatch()");
+                        CheckingMatch();
+                        //Debug.Log("End CheckingMatch()");
+                    }
+                    else
+                    {
+                        Debug.LogError("Not find GameObject");
                     }
                 }
                 else
                 {
-                    Debug.LogError("Not find GameObject");
+                    //Debug.Log("No raycast");
                 }
             }
-            else
-            {
-                Debug.Log("No raycast");
-            }
-        }
     }
 
     private void ControlMod3()
     {
         foreach (var key in hashtableControlMod3.Keys.ToList())
         {
-            Debug.Log("key: " + key + " value: " + hashtableControlMod3[key]);
+            //Debug.Log("key: " + key + " value: " + hashtableControlMod3[key]);
             if ((hashtableControlMod3[key] % 3) != 0)
             {
                 string[] types = key.Split("_");
-                Debug.Log("types: " + types[0] + " " + types[1] + " " + types[2]);
+                //Debug.Log("types: " + types[0] + " " + types[1] + " " + types[2]);
                 TypeShape typeShape = (TypeShape)Int32.Parse(types[0]);
                 TypeColor typeColor = (TypeColor)Int32.Parse(types[1]);
                 TypeAnimal typeAnimal = (TypeAnimal)Int32.Parse(types[2]);
@@ -159,7 +161,7 @@ public class GameManager : MonoBehaviour
                 int countIter = 0;
                 while (hashtableControlMod3[key] % 3 != 0)
                 {
-                    //TODO дублирование кода
+                    //TODO дублирование кода создания
                     UnityEngine.Vector3 pos = new UnityEngine.Vector3(transform.position.x, transform.position.y, transform.position.z);
                     pos.x = UnityEngine.Random.Range(-1.88f, 1.88f); //TODO лучше высчитывать динамически
                     GameObject objectFigure = Instantiate(refPrefabFigure, pos, UnityEngine.Quaternion.Euler(0, 0, UnityEngine.Random.Range(0f, 360f)));
@@ -173,7 +175,7 @@ public class GameManager : MonoBehaviour
                     hashtableControlMod3[key] = hashtableControlMod3[key] + 1;
                     countIter++;
                 }
-                Debug.Log("countIter: " + countIter);
+                //Debug.Log("countIter: " + countIter);
             }
         }
 
@@ -246,48 +248,67 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void CheckingMatch()
+    public void CheckingMatch() //IEnumerator
     {
         //Debug.Log("CheckingMatch(): " + currentAction);
-        int countMatch = 0;
+        bool isMatch = false;
         for (int i = 0; i < 7; i++)
         {
             if (actionArray[i] == null)
             {
                 break;
             }
-            if (i == 0)
+            if (i == 0 || i == 1)
             {
                 continue;
             }
 
             UiFigure uiFigureCurrent = actionArray[i].GetComponent<UiFigure>();
             UiFigure uiFigurePrevious = actionArray[i - 1].GetComponent<UiFigure>();
+            UiFigure uiFigurePrevious2 = actionArray[i - 2].GetComponent<UiFigure>();
             string keyCurrent = uiFigureCurrent.GetTypeShape() + "_" + uiFigureCurrent.GetTypeColor() + "_" + uiFigureCurrent.GetTypeAnimal();
             string keyPrevious = uiFigurePrevious.GetTypeShape() + "_" + uiFigurePrevious.GetTypeColor() + "_" + uiFigurePrevious.GetTypeAnimal();
-            if (keyCurrent == keyPrevious)
+            string keyPrevious2 = uiFigurePrevious2.GetTypeShape() + "_" + uiFigurePrevious2.GetTypeColor() + "_" + uiFigurePrevious2.GetTypeAnimal();
+            if (keyCurrent == keyPrevious && keyCurrent == keyPrevious2)
             {
-                countMatch++;
-            }
-
-            if (countMatch == 2)
-            {
-                Destroy(actionArray[i]);
-                actionArray[i] = null;
-                Destroy(actionArray[i - 1]);
-                actionArray[i - 1] = null;
-                Destroy(actionArray[i - 2]);
-                actionArray[i - 2] = null;
+                isMatch = true;
                 currentAction -= 3;
+                StartCoroutine(AwaitUiFigureMove(uiFigureCurrent, i));
             }
         }
         //Debug.Log("countMatch: " + countMatch);
+        if (listFigures.Count == 0 && isMatch == false)
+        {
+            statusGame = StatusGame.Lose;
+            refDisplayLose.SetActive(true);
+        }
     }
 
+    private IEnumerator AwaitUiFigureMove(UiFigure uiFigure, int index)
+    {
+        while (uiFigure.GetStatusMove())
+        {
+            yield return new WaitForSeconds(0.01f);
+        }
+        Destroy(actionArray[index]);
+        actionArray[index] = null;
+        Destroy(actionArray[index - 1]);
+        actionArray[index - 1] = null;
+        Destroy(actionArray[index - 2]);
+        actionArray[index - 2] = null;
+
+        if (listFigures.Count == 0 && actionArray[0] == null)
+        {
+            statusGame = StatusGame.Win;
+            refDisplayWin.SetActive(true);
+        }
+    }
+
+    //TODO Без сброса игровой сессии(ПРОБЛЕМА - большое кол-во догонки до MOD 3)
     public void RegenerateFigures()
     {
         int countFigures = listFigures.Count();
-        Debug.Log("RegenerateFigures() count_new:"+countFigures);
+        //Debug.Log("RegenerateFigures() count_new:" + countFigures);
         refDisplayWait.SetActive(true);
 
         foreach (GameObject item in listFigures)
