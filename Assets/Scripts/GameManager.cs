@@ -302,14 +302,28 @@ public class GameManager : MonoBehaviour
             statusGame = StatusGame.Win;
             refDisplayWin.SetActive(true);
         }
+        else if (listFigures.Count == 0 && actionArray[0] != null)
+        {
+            statusGame = StatusGame.Lose;
+            refDisplayLose.SetActive(true);
+        }
     }
 
-    //TODO Без сброса игровой сессии(ПРОБЛЕМА - большое кол-во догонки до MOD 3)
     public void RegenerateFigures()
     {
+        if (statusGame == StatusGame.Init || statusGame == StatusGame.Regenerate)
+        {
+            return;
+        }
+        refDisplayWait.SetActive(true);
+
         int countFigures = listFigures.Count();
         //Debug.Log("RegenerateFigures() count_new:" + countFigures);
-        refDisplayWait.SetActive(true);
+        countFigures = countFigures / 3;
+        if (countFigures == 0)
+        {
+            countFigures = 1;
+        }
 
         foreach (GameObject item in listFigures)
         {
@@ -318,6 +332,15 @@ public class GameManager : MonoBehaviour
         listFigures.Clear();
 
         hashtableControlMod3.Clear();
+
+        if (statusGame == StatusGame.Lose)
+        {
+            refDisplayLose.SetActive(false);
+        }
+        else if (statusGame == StatusGame.Win)
+        {
+            refDisplayWin.SetActive(false);
+        }
 
         statusGame = StatusGame.Regenerate;
         StartCoroutine(CreateFigures(countFigures));
