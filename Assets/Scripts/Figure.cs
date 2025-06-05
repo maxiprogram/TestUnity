@@ -9,7 +9,8 @@ public enum TypeShape
     Square,
     Circle,
     Triangle,
-    Polygon
+    Polygon,
+    SpecialWeight
 };
 
 //TypeColor-нельзя задавать значение явно
@@ -50,12 +51,26 @@ public class Figure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        return typeColor;
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            return 0;
+        }
+        else
+        {
+            return typeColor;   
+        }
     }
 
     public TypeAnimal GetTypeAnimal()
     {
-        return typeAnimal;
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            return 0;
+        }
+        else
+        {
+            return typeAnimal;
+        }
     }
 
     public void SetTypeShape(TypeShape typeShape, bool isInitPhysic = true)
@@ -77,6 +92,9 @@ public class Figure : MonoBehaviour
             case TypeShape.Square:
                 filename += "Square";
                 break;
+            case TypeShape.SpecialWeight:
+                filename += "SpecialWeight";
+                break;
             default:
                 filename += "Square";
                 break;
@@ -94,9 +112,13 @@ public class Figure : MonoBehaviour
 
         if (isInitPhysic)
         {
+            //this.AddComponent<PolygonCollider2D>(); //Надо тестировать полигоны
             this.AddComponent<CircleCollider2D>();
-            this.AddComponent<Rigidbody2D>();
-            //this.AddComponent<PolygonCollider2D>();   
+            Rigidbody2D rigidbody2D = this.AddComponent<Rigidbody2D>();
+            if (typeShape == TypeShape.SpecialWeight)
+            {
+                rigidbody2D.mass = 100.0f;
+            }
         }
 
     }
@@ -118,6 +140,11 @@ public class Figure : MonoBehaviour
             default:
                 spriteRenderer.color = Color.white;
                 break;
+        }
+
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            spriteRenderer.color = Color.black;
         }
     }
 
@@ -149,6 +176,11 @@ public class Figure : MonoBehaviour
             default:
                 filename += "tiger";
                 break;
+        }
+        
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            filename = "TypeAnimals/special_weight";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);

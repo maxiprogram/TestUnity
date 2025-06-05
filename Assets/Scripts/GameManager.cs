@@ -213,39 +213,48 @@ public class GameManager : MonoBehaviour
         int maxAnimal = Enum.GetValues(typeof(TypeAnimal)).Cast<int>().Max();
 
 
-        /*if (listFigures.Count >= 36)
+        TypeShape rndTypeShape = (TypeShape)UnityEngine.Random.Range(0, maxShape + 1);
+        TypeColor rndTypeColor = (TypeColor)UnityEngine.Random.Range(0, maxColor + 1);
+        TypeAnimal rndTypeAnimal = (TypeAnimal)UnityEngine.Random.Range(0, maxAnimal + 1);
+
+        /*if (listFigures.Count >= 6)
         {
+            rndTypeShape = TypeShape.SpecialWeight;
+            rndTypeColor = TypeColor.Green;
+            rndTypeAnimal = TypeAnimal.Cat;
+            figure.SetTypeShape(TypeShape.SpecialWeight);
+            figure.SetTypeColor(TypeColor.Green);
+            figure.SetTypeAnimal(TypeAnimal.Cat);
+        }
+        else
+        {
+            rndTypeShape = TypeShape.Square;
+            rndTypeColor = TypeColor.Blue;
+            rndTypeAnimal = TypeAnimal.Dog;
             figure.SetTypeShape(TypeShape.Square);
             figure.SetTypeColor(TypeColor.Blue);
             figure.SetTypeAnimal(TypeAnimal.Dog);
-        }
-        else
-        {
-            figure.SetTypeShape(TypeShape.Circle);
-            figure.SetTypeColor(TypeColor.Green);
-            figure.SetTypeAnimal(TypeAnimal.Cat);
         }*/
 
-        TypeShape rndTypeShape = (TypeShape)UnityEngine.Random.Range(0, maxShape + 1);
         figure.SetTypeShape(rndTypeShape);
-
-        TypeColor rndTypeColor = (TypeColor)UnityEngine.Random.Range(0, maxColor + 1);
         figure.SetTypeColor(rndTypeColor);
-
-        TypeAnimal rndTypeAnimal = (TypeAnimal)UnityEngine.Random.Range(0, maxAnimal + 1);
         figure.SetTypeAnimal(rndTypeAnimal);
 
         string key = (int)rndTypeShape + "_" + (int)rndTypeColor + "_" + (int)rndTypeAnimal;
+        if (rndTypeShape == TypeShape.SpecialWeight)
+        {
+            key = (int)rndTypeShape + "_0_0";
+        }
         if (hashtableControlMod3.ContainsKey(key))
-        {
-            //Debug.Log("Increment hashtableControlMod3");
-            hashtableControlMod3[key] = hashtableControlMod3[key] + 1;
-        }
-        else
-        {
-            //Debug.Log("Add hashtableControlMod3");
-            hashtableControlMod3.Add(key, 1);
-        }
+            {
+                //Debug.Log("Increment hashtableControlMod3");
+                hashtableControlMod3[key] = hashtableControlMod3[key] + 1;
+            }
+            else
+            {
+                //Debug.Log("Add hashtableControlMod3");
+                hashtableControlMod3.Add(key, 1);
+            }
     }
 
     public void CheckingMatch() //IEnumerator
@@ -269,6 +278,7 @@ public class GameManager : MonoBehaviour
             string keyCurrent = uiFigureCurrent.GetTypeShape() + "_" + uiFigureCurrent.GetTypeColor() + "_" + uiFigureCurrent.GetTypeAnimal();
             string keyPrevious = uiFigurePrevious.GetTypeShape() + "_" + uiFigurePrevious.GetTypeColor() + "_" + uiFigurePrevious.GetTypeAnimal();
             string keyPrevious2 = uiFigurePrevious2.GetTypeShape() + "_" + uiFigurePrevious2.GetTypeColor() + "_" + uiFigurePrevious2.GetTypeAnimal();
+            Debug.Log("cmp keys: "+keyCurrent+" "+keyPrevious+" "+keyPrevious2);
             if (keyCurrent == keyPrevious && keyCurrent == keyPrevious2)
             {
                 isMatch = true;

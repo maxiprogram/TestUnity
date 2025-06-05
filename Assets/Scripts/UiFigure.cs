@@ -18,7 +18,8 @@ public class UiFigure : MonoBehaviour
     private RectTransform rectTransform;
     private bool statusMove = false;
     private Vector2 targetPosition;
-    [SerializeField] private float moveSpeed = 10;
+    //[SerializeField] private float moveSpeed = 50000.0f;
+    private float moveSpeed = 2500.0f;
 
     public void SetTargetPosition(Vector2 pos)
     {
@@ -42,12 +43,25 @@ public class UiFigure : MonoBehaviour
 
     public TypeColor GetTypeColor()
     {
-        return typeColor;
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            return 0;
+        }
+        else
+        {
+            return typeColor;   
+        }
     }
 
     public TypeAnimal GetTypeAnimal()
-    {
-        return typeAnimal;
+    {if (typeShape == TypeShape.SpecialWeight)
+        {
+            return 0;
+        }
+        else
+        {
+            return typeAnimal;
+        }
     }
 
     public void SetTypeShape(TypeShape typeShape)
@@ -68,6 +82,9 @@ public class UiFigure : MonoBehaviour
                 break;
             case TypeShape.Square:
                 filename += "Square";
+                break;
+            case TypeShape.SpecialWeight:
+                filename += "SpecialWeight";
                 break;
             default:
                 filename += "Square";
@@ -104,6 +121,11 @@ public class UiFigure : MonoBehaviour
                 imageRenderer.color = Color.white;
                 break;
         }
+
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            imageRenderer.color = Color.black;
+        }
     }
 
     public void SetTypeAnimal(TypeAnimal typeAnimal)
@@ -134,6 +156,11 @@ public class UiFigure : MonoBehaviour
             default:
                 filename += "tiger";
                 break;
+        }
+
+        if (typeShape == TypeShape.SpecialWeight)
+        {
+            filename = "TypeAnimals/special_weight";
         }
 
         Sprite sprite = Resources.Load<Sprite>(filename);
@@ -176,7 +203,8 @@ public class UiFigure : MonoBehaviour
     {
         if (statusMove)
         {
-            rectTransform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed); //* Time.deltaTime
+            //Debug.Log("MoveSpeed:" + moveSpeed + " or " + moveSpeed * Time.deltaTime);
+            rectTransform.position = Vector2.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime); //* Time.deltaTime
             if (rectTransform.position.x == targetPosition.x && rectTransform.position.y == targetPosition.y)
             {
                 Debug.Log("Stop Animation Move UI");
